@@ -24,7 +24,7 @@ export default async function ArchitectMessages() {
   if (!user) return <div>Please log in</div>;
 
   const conversations = await getArchitectConversations(user.id);
-  const sampleConversation = conversations[0]; // Simplified for demo
+  const sampleConversation = conversations[0]; 
 
   return (
     <div className="p-4">
