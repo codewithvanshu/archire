@@ -1,0 +1,157 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("NEXT_PUBLIC_DATABASE_URL")
+  directUrl = env("NEXT_PUBLIC_DIRECT_URL")
+}
+
+enum Role {
+  CLIENT
+  ARCHITECT
+}
+
+enum ProjectStatus {
+  OPEN
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum ProposalStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+enum ContractStatus {
+  ACTIVE
+  COMPLETED
+  TERMINATED
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  role          Role      @default(CLIENT)
+  name          String?
+  bio           String?
+  contactInfo   String?
+  dateJoined    DateTime  @default(now())
+  accountStatus String    @default("ACTIVE")
+  
+  clientProjects   Project[] @relation("ClientProjects")
+  architectProposals Proposal[] @relation("ArchitectProposals")
+  clientContracts  Contract[] @relation("ClientContracts")
+  architectContracts Contract[] @relation("ArchitectContracts")
+  payments         Payment[]
+  reviewsGiven     Review[] @relation("ReviewsGiven")
+  reviewsReceived  Review[] @relation("ReviewsReceived")
+  messagesSent     Conversation[] @relation("SentMessages")
+  messagesReceived Conversation[] @relation("ReceivedMessages")
+  portfolioItems    PortfolioItem[]
+}
+
+model Project {
+  id          String    @id @default(uuid())
+  title       String
+  description String
+  category    String
+  budget      Float
+  timeline    String
+  requirements String
+  status      ProjectStatus @default(OPEN)
+  clientId    String
+  client      User      @relation("ClientProjects", fields: [clientId], references: [id])
+  
+  proposals   Proposal[]
+  contract    Contract?
+  reviews     Review[]
+  conversations Conversation[]
+}
+
+model Proposal {
+  id             String    @id @default(uuid())
+  projectId      String
+  architectId    String
+  estimatedCost  Float
+  proposedTimeline String
+  description    String
+  status         ProposalStatus @default(PENDING)
+  
+  project        Project   @relation(fields: [projectId], references: [id])
+  architect      User      @relation("ArchitectProposals", fields: [architectId], references: [id])
+}
+
+model PortfolioItem {
+  id          String    @id @default(uuid())
+  architectId String
+  title       String
+  description String
+  imageUrl    String
+  
+  architect   User      @relation(fields: [architectId], references: [id])
+}
+
+model Review {
+  id          String    @id @default(uuid())
+  projectId   String
+  clientId    String
+  architectId String
+  rating      Int       @default(0)
+  comment     String?
+  date        DateTime  @default(now())
+  
+  project     Project   @relation(fields: [projectId], references: [id])
+  client      User      @relation("ReviewsGiven", fields: [clientId], references: [id])
+  architect   User      @relation("ReviewsReceived", fields: [architectId], references: [id])
+}
+
+model Conversation {
+  id          String    @id @default(uuid())
+  senderId    String
+  receiverId  String
+  projectId   String
+  lastMessage String
+  timestamp   DateTime  @default(now())
+  
+  sender      User      @relation("SentMessages", fields: [senderId], references: [id])
+  receiver    User      @relation("ReceivedMessages", fields: [receiverId], references: [id])
+  project     Project   @relation(fields: [projectId], references: [id])
+}
+
+model Contract {
+  id          String    @id @default(uuid())
+  projectId   String    @unique
+  clientId    String
+  architectId String
+  terms       String
+  startDate   DateTime
+  endDate     DateTime
+  status      ContractStatus @default(ACTIVE)
+  
+  project     Project   @relation(fields: [projectId], references: [id])
+  client      User      @relation("ClientContracts", fields: [clientId], references: [id])
+  architect   User      @relation("ArchitectContracts", fields: [architectId], references: [id])
+  payments    Payment[]
+}
+
+model Payment {
+  id          String    @id @default(uuid())
+  contractId  String
+  userId      String
+  amount      Float
+  date        DateTime  @default(now())
+  status      PaymentStatus @default(PENDING)
+  
+  contract    Contract  @relation(fields: [contractId], references: [id])
+  user        User      @relation(fields: [userId], references: [id])
+}
