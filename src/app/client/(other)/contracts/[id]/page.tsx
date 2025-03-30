@@ -1,10 +1,19 @@
 import ContractDetails from "@/components/common/contract-detail";
 import PaymentHistory from "@/components/common/payment-history";
 import { getClientContractData } from "@/actions/client/getClientContractData";
+import { notFound } from "next/navigation";
 
-export default async function ClientContractDetail({ params }: { params: { id?: string } }) {
+// Define the props type explicitly to match Next.js expectations
+interface ArchitectContractDetailProps {
+  params: { id: string };
+  searchParams?: { [key: string]: string | string[] | undefined };
+}
+
+export default async function ClientContractDetail({
+  params,
+}: ArchitectContractDetailProps) {
   if (!params?.id) {
-    return <div className="p-4 text-red-500">Error: Contract ID is missing.</div>;
+    notFound();
   }
 
   try {
@@ -20,7 +29,15 @@ export default async function ClientContractDetail({ params }: { params: { id?: 
         <PaymentHistory payments={payments} />
       </div>
     );
-  } catch  {
-    return <div className="p-4 text-red-500">Error loading contract details.</div>;
+  } catch {
+    return (
+      <div className="p-4 text-red-500">Error loading contract details.</div>
+    );
   }
 }
+
+// Optional: Metadata for SEO (if needed)
+export const metadata = {
+  title: "Architect Contract Details",
+  description: "View contract details and payment history for architects.",
+};
