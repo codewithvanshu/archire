@@ -8,7 +8,13 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { BookOpen, FolderOpenDot, LayoutDashboard, Users } from "lucide-react";
+import {
+  BookOpen,
+  FolderOpenDot,
+  LayoutDashboard,
+  PhoneCall,
+  Users,
+} from "lucide-react";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -28,6 +34,11 @@ export function HomeAppSidebar({
         title: "About",
         url: "/about",
         icon: FolderOpenDot,
+      },
+      {
+        title: "Contact",
+        url: "/Contact",
+        icon: PhoneCall,
       },
       {
         title: "Privacy Policy",

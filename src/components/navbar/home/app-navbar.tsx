@@ -13,6 +13,7 @@ export default function HomeNavbar() {
 
   const navLinks = [
     { href: "/about", label: "About" },
+    { href: "/contact", label: "Contact" },
     { href: "/privacy", label: "Privacy" },
     { href: "/terms", label: "Terms & Conditions" },
   ];
@@ -28,7 +29,7 @@ export default function HomeNavbar() {
           className="flex items-center gap-2 text-lg font-semibold md:text-base"
         >
           <Logo className="size-8" />
-          <span className=" gap-0.5">VQMS</span>
+          <span className=" gap-0.5">ArcHire</span>
         </Link>
       </div>
       <nav className="hidden md:flex flex-col md:flex-row items-center gap-5 text-sm lg:gap-6 flex-1">
